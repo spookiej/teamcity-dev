@@ -1,0 +1,28 @@
+version: "2"
+services:
+  server:
+    image: "jetbrains/teamcity-server:2020.1.5"
+    ports:
+      - "127.0.0.1:8111:8111"
+    volumes:
+      - ./data/server/data:/data/teamcity_server/datadir
+      - ./data/server/logs:/opt/teamcity/logs
+    networks:
+      - teamcity
+  agent:
+    image: "jetbrains/teamcity-agent:2020.1.5"
+    volumes:
+      - ./data/buildagent/conf:/data/teamcity_agent/conf
+      - ./data/buildagent/work:/opt/buildagent/work
+      - ./data/buildagent/system/git:/opt/buildagent/system/git
+      - ./data/buildagent/temp:/opt/buildagent/temp
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - AGENT_NAME=bond-007
+      - SERVER_URL=http://server:8111/
+    networks:
+      - teamcity
+
+networks:
+  teamcity:
+    name: teamcity
